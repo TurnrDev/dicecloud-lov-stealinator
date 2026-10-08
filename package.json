@@ -1,23 +1,12 @@
 {
-  "name": "hoarddc",
-  "version": "1.0.0",
-  "description": "DiceCloud ========",
-  "main": "index.js",
+  "name": "dicecloud-lov-stealinator",
+  "version": "0.1.0",
+  "description": "Read-only DiceCloud Libraries of Vexus exporter and local restore helper.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TurnrDev/HoardDC.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["dicecloud", "backup", "libraries-of-vexus"],
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/TurnrDev/HoardDC/issues"
-  },
-  "homepage": "https://github.com/TurnrDev/HoardDC#readme",
   "dependencies": {
     "playwright": "^1.63.0"
   }

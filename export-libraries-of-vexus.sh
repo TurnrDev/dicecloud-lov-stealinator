@@ -15,6 +15,17 @@ fi
 
 echo 'Log into DiceCloud in the opened Chromium window. No site data will be modified.'
 read -r -p 'Press Enter once login is complete: '
+
+# Build fresh manifests every time. They are generated inside the ignored
+# exports directory so a clone never needs the investigation-era test files.
+mkdir -p exports
+DICECLOUD_CDP_URL="$cdp_url" node tools/discover-dicecloud-library-collection.js \
+  jp6xTaHDZK4ELYzvN \
+  exports/dicecloud-library-collection-jp6xTaHDZK4ELYzvN.json
+DICECLOUD_CDP_URL="$cdp_url" node tools/discover-dicecloud-library-collection.js \
+  5EKp4S55tDzRivSLn \
+  exports/dicecloud-library-collection-5EKp4S55tDzRivSLn.json
+
 DICECLOUD_CDP_URL="$cdp_url" node tools/export-dicecloud-library-collections.js \
   exports/dicecloud-library-collection-jp6xTaHDZK4ELYzvN.json \
   exports/dicecloud-library-collection-5EKp4S55tDzRivSLn.json

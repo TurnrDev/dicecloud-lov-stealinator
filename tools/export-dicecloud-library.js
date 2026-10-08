@@ -10,7 +10,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 
 const CDP_URL = process.env.DICECLOUD_CDP_URL || 'http://127.0.0.1:9222';
-const LIBRARY_ID = process.argv[2] || 'WugQNXFRRvoDFJZfS';
+const LIBRARY_ID = process.argv[2];
 const OUTPUT = process.argv[3] || path.join(
   'exports', `dicecloud-library-${LIBRARY_ID}.json`
 );
@@ -51,6 +51,9 @@ const COMPLETE_NODE_FIELDS = [
 ];
 
 async function main() {
+  if (!LIBRARY_ID) {
+    throw new Error('Usage: node tools/export-dicecloud-library.js <library-id> [output.json] [--loaded]');
+  }
   const browser = await chromium.connectOverCDP(CDP_URL);
   try {
     const pages = browser.contexts().flatMap(context => context.pages());
@@ -68,14 +71,14 @@ async function main() {
     }
     await page.waitForFunction(() => typeof Meteor !== 'undefined' && typeof Mongo !== 'undefined');
     // The Vue route creates the ordinary `libraryNodes` subscription after it
-    // mounts. Wait for that known complete tree before layering the wider
-    // projection, rather than racing application hydration.
+    // mounts. Wait for it before layering the wider projection, rather than
+    // racing application hydration.
     if (!USE_LOADED_ROUTE) {
       // Keep the readiness wait in the page's Meteor realm. This avoids a
       // Playwright argument-overload issue and, crucially, means the normal
       // route subscription and the wider subscription below share one CDP
       // connection and one Minimongo lifetime.
-      await page.evaluate(({ libraryId, expectedCount, timeoutMs }) => new Promise((resolve, reject) => {
+      await page.evaluate(({ timeoutMs }) => new Promise((resolve, reject) => {
         const startedAt = Date.now();
         const check = () => {
           const nodes = Mongo.Collection.getAll()
@@ -83,18 +86,18 @@ async function main() {
           // The deployed client currently publishes its restricted normal tree
           // with legacy `parent`/`ancestors` fields and without `root`. The
           // single-library route owns this collection while it is open.
-          if (nodes?.find({}).count() === expectedCount) {
+          if (nodes?.find({}).count() > 0) {
             resolve();
             return;
           }
           if (Date.now() - startedAt >= timeoutMs) {
-            reject(new Error(`Normal library tree did not reach ${expectedCount} nodes within ${timeoutMs}ms.`));
+            reject(new Error(`Normal library tree did not load within ${timeoutMs}ms.`));
             return;
           }
           setTimeout(check, 100);
         };
         check();
-      }), { libraryId: LIBRARY_ID, expectedCount: 68, timeoutMs: 120000 });
+      }), { timeoutMs: 120000 });
     }
 
     const snapshot = await page.evaluate(async ({ libraryId, fields }) => {
@@ -124,7 +127,7 @@ async function main() {
       const library = libraries.findOne(libraryId);
       const nodes = libraryNodes.find({}, { sort: { left: 1 } }).fetch();
       if (!library) throw new Error(`Library ${libraryId} was not published.`);
-      if (nodes.length !== 68) throw new Error(`Expected 68 library nodes; received ${nodes.length}.`);
+      if (!nodes.length) throw new Error(`Library ${libraryId} has no published nodes.`);
 
       const ids = new Set(nodes.map(node => node._id));
       const nodeReferences = [];
