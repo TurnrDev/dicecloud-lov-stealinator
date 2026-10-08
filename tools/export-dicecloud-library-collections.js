@@ -60,7 +60,12 @@ async function main() {
       await wait(250);
     }
     await fs.writeFile(path.join(outputDir, 'export-manifest.json'), `${JSON.stringify({ collection: manifest.collection, results }, null, 2)}\n`);
+    console.log(`completed collection ${manifest.collection._id}: ${results.filter(result => result.status === 'ok').length}/${results.length} libraries exported`);
   }
+  // With CDP, close disconnects this client; it does not terminate the
+  // externally owned Chromium process. It lets Node exit cleanly.
+  await browser.close();
+  console.log('Batch export complete. All manifests have been written.');
 }
 
 main().catch(error => { console.error(error.stack || error); process.exitCode = 1; });

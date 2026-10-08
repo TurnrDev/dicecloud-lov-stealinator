@@ -18,3 +18,4 @@ read -r -p 'Press Enter once login is complete: '
 DICECLOUD_CDP_URL="$cdp_url" node tools/export-dicecloud-library-collections.js \
   exports/dicecloud-library-collection-jp6xTaHDZK4ELYzvN.json \
   exports/dicecloud-library-collection-5EKp4S55tDzRivSLn.json
+echo "Export finished successfully. Local files are in: $root/exports/libraries-of-vexus"

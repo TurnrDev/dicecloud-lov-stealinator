@@ -14,3 +14,10 @@ not implemented yet.
 
 `exports/` is intentionally gitignored: it may contain content that must remain
 local and must not be redistributed.
+
+## Local restore mode
+
+For a clean local DiceCloud database, restore mode preserves original library
+and node IDs (including legacy `parent` and `ancestors` references) while
+assigning ownership to a local user. It emits a Mongo shell program rather than
+writing by itself; review or pipe that program into the local Mongo container.
