@@ -8,6 +8,13 @@ The exporter attaches to Chromium with Playwright, reads the public
 Meteor/Minimongo publications, and writes JSON snapshots locally. It never
 calls DiceCloud methods or writes data to dicecloud.com.
 
+> [!WARNING]
+> This is an unsupported personal tool. **I accept no responsibility for damage,
+> data loss, corruption, downtime, or any other problem it causes to your
+> DiceCloud/HoardDC instance. I also accept no responsibility if DiceCloud takes
+> action against your account, including a ban, for your use of it.** Read the
+> code, keep backups, and decide for yourself whether the risk is acceptable.
+
 ## Keep the archive private
 
 The exported content is not to be redistributed. `exports/` is intentionally
